@@ -1,0 +1,21 @@
+name: 'Enable Pull Request Automerge'
+description: 'A GitHub action to enable auto-merge on a pull request'
+inputs:
+  token:
+    description: 'A repo scoped GitHub Personal Access Token.'
+    required: true
+  repository:
+    description: 'The target GitHub repository'
+    default: ${{ github.repository }}
+  pull-request-number:
+    description: 'The number of the target pull request'
+    required: true
+  merge-method:
+    description: 'The merge method to use. `MERGE`, `REBASE` or `SQUASH`.'
+    default: MERGE
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'git-pull-request'
+  color: 'gray-dark'
