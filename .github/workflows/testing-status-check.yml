@@ -5,7 +5,7 @@ on:
       - 'ci-test/built-base'
       - 'ci-test/committed-base'
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Testing status check"
