@@ -77,9 +77,7 @@ class GithubHelper {
         pullRequestId: $pullRequestId,
         mergeMethod: $mergeMethod
       }) {
-        clientMutationId
         pullRequest {
-          id
           autoMergeRequest {
             enabledAt
             enabledBy {

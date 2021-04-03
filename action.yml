@@ -11,7 +11,7 @@ inputs:
     description: 'The number of the target pull request'
     required: true
   merge-method:
-    description: 'The merge method to use. `MERGE`, `REBASE` or `SQUASH`.'
+    description: 'The merge method to use. `merge`, `rebase` or `squash`.'
     default: MERGE
 runs:
   using: 'node12'
