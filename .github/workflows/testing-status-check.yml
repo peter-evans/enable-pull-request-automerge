@@ -2,8 +2,8 @@ name: Testing status check
 on:
   pull_request:
     branches:
-      - ci-test/built-base
-      - ci-test/committed-base
+      - 'ci-test/built'
+      - 'ci-test/committed'
 jobs:
   build:
     runs-on: ubuntu-latest
