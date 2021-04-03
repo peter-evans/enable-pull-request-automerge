@@ -38,16 +38,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GithubHelper = void 0;
 const core = __importStar(__nccwpck_require__(186));
-const graphql_1 = __nccwpck_require__(467);
-const util_1 = __nccwpck_require__(669);
 const core_1 = __nccwpck_require__(762);
+const util_1 = __nccwpck_require__(669);
 class GithubHelper {
     constructor(token) {
-        this.graphqlClient = graphql_1.graphql.defaults({
-            headers: {
-                authorization: `token ${token}`
-            }
-        });
         this.octokit = new core_1.Octokit({
             auth: token
         });
@@ -67,10 +61,6 @@ class GithubHelper {
       }
     }`;
             const response = yield this.octokit.graphql(query, params);
-            // const response = await this.graphqlClient<GetPullRequestIdResponse>(
-            //   query,
-            //   params
-            // )
             return response.repository.pullRequest.id;
             // Often returns
             // Error: Could not resolve to a PullRequest with the number of 12.
@@ -97,7 +87,7 @@ class GithubHelper {
         }
       }
     }`;
-            const response = yield this.graphqlClient(query, params);
+            const response = yield this.octokit.graphql(query, params);
             core.debug(`response: ${util_1.inspect(response)}`);
             core.debug(`autoMergeRequest: ${util_1.inspect(response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest)}`);
             // clientMutationId and enabledAt are null
@@ -638,7 +628,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 var universalUserAgent = __nccwpck_require__(30);
 var beforeAfterHook = __nccwpck_require__(682);
 var request = __nccwpck_require__(234);
-var graphql = __nccwpck_require__(467);
+var graphql = __nccwpck_require__(668);
 var authToken = __nccwpck_require__(334);
 
 function _objectWithoutPropertiesLoose(source, excluded) {
@@ -1208,7 +1198,7 @@ exports.endpoint = endpoint;
 
 /***/ }),
 
-/***/ 467:
+/***/ 668:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -1408,7 +1398,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var endpoint = __nccwpck_require__(440);
 var universalUserAgent = __nccwpck_require__(30);
 var isPlainObject = __nccwpck_require__(287);
-var nodeFetch = _interopDefault(__nccwpck_require__(419));
+var nodeFetch = _interopDefault(__nccwpck_require__(467));
 var requestError = __nccwpck_require__(537);
 
 const VERSION = "5.4.14";
@@ -1802,7 +1792,7 @@ exports.isPlainObject = isPlainObject;
 
 /***/ }),
 
-/***/ 419:
+/***/ 467:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 "use strict";
