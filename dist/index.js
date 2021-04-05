@@ -7,25 +7,6 @@ module.exports =
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -37,9 +18,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GithubHelper = void 0;
-const core = __importStar(__nccwpck_require__(186));
 const core_1 = __nccwpck_require__(762);
-const util_1 = __nccwpck_require__(669);
 class GithubHelper {
     constructor(token) {
         this.octokit = new core_1.Octokit({
@@ -86,13 +65,7 @@ class GithubHelper {
       }
     }`;
             const response = yield this.octokit.graphql(query, params);
-            core.debug(`response: ${util_1.inspect(response)}`);
-            core.debug(`autoMergeRequest: ${util_1.inspect(response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest)}`);
-            // clientMutationId and enabledAt are null
-            // Does it need to be in "merging is blocked" state?
-            // It needs a check to be selected
-            // When successful, only enabledAt is not null
-            // Does it work on a pull request that already has requirements satisfied?
+            return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest;
         });
     }
 }
@@ -151,9 +124,18 @@ function run() {
             const [owner, repo] = inputs.repository.split('/');
             core.debug(`Repo: ${util_1.inspect(repo)}`);
             const githubHelper = new github_helper_1.GithubHelper(inputs.token);
+            core.info('Fetching pull request ID');
             const pullRequestId = yield githubHelper.getPullRequestId(owner, repo, inputs.pullRequestNumber);
             core.debug(`PullRequestId: ${util_1.inspect(pullRequestId)}`);
-            yield githubHelper.enablePullRequestAutomerge(pullRequestId, inputs.mergeMethod.toUpperCase());
+            core.info(`Enabling auto-merge on pull request ID ${pullRequestId}`);
+            const res = yield githubHelper.enablePullRequestAutomerge(pullRequestId, inputs.mergeMethod.toUpperCase());
+            core.debug(`AutoMergeRequest: ${util_1.inspect(res)}`);
+            if (res.enabledAt) {
+                core.info(`Auto-merge successfully enabled by ${res.enabledBy.login}`);
+            }
+            else {
+                throw Error('Failed to enable auto-merge');
+            }
         }
         catch (error) {
             core.setFailed(error.message);
