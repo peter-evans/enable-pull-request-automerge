@@ -1,0 +1,11 @@
+name: Test required status check
+on:
+  pull_request:
+    branches:
+      - 'ci-test/status-check-base-built'
+      - 'ci-test/status-check-base-committed'
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Testing required status check"
