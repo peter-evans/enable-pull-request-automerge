@@ -50,7 +50,7 @@ In the following example [create-pull-request](https://github.com/peter-evans/cr
       - name: Enable Pull Request Automerge
         uses: peter-evans/enable-pull-request-automerge@v1
         with:
-          token: token: ${{ secrets.PAT }}
+          token: ${{ secrets.PAT }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
           merge-method: squash
 ```
