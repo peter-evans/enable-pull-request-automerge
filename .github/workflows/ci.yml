@@ -54,6 +54,12 @@ jobs:
           name: action.yml
           path: .
 
+      - uses: tibdex/github-app-token@v1
+        id: generate-token
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Create change
         run: date +%s > report.txt
 
@@ -61,7 +67,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.ACTIONS_BOT_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           commit-message: '[CI] test ${{ matrix.target }}'
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
@@ -77,7 +83,7 @@ jobs:
       - name: Enable Pull Request Automerge
         uses: ./
         with:
-          token: ${{ secrets.ACTIONS_BOT_TOKEN }}
+          token: ${{ steps.generate-token.outputs.token }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
           merge-method: squash
 
