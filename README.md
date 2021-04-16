@@ -28,7 +28,7 @@ A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collabo
 
 This action uses a GitHub API that only works under specific conditions. All of the following conditions must be true for this action to succeed.
 
-1. The target repository must have `Allow auto-merge` enabled in settings.
+1. The target repository must have [Allow auto-merge](https://docs.github.com/en/github/administering-a-repository/managing-auto-merge-for-pull-requests-in-your-repository) enabled in settings.
 2. The pull request `base` must have a branch protection rule with at least one requirement enabled.
 3. The pull request must be in a state where requirements have not yet been satisfied. If the pull request can already be merged, attempting to enable auto-merge will fail.
 
