@@ -48,6 +48,7 @@ In the following example [create-pull-request](https://github.com/peter-evans/cr
           token: ${{ secrets.PAT }}
 
       - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
         uses: peter-evans/enable-pull-request-automerge@v1
         with:
           token: ${{ secrets.PAT }}
