@@ -132,16 +132,10 @@ jobs:
 
       - name: Auto approve
         if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: actions/github-script@v3
+        uses: peter-evans/approve-pull-request-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            await github.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: ${{ steps.cpr.outputs.pull-request-number }},
-              event: 'APPROVE'
-            })
+          number: ${{ steps.cpr.outputs.pull-request-number }}
 
   package:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
