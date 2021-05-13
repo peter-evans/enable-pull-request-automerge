@@ -59,10 +59,11 @@ export class GithubHelper {
         }
       }
     }`
-    const response = await this.octokit.graphql<EnablePullRequestAutoMergeResponse>(
-      query,
-      params
-    )
+    const response =
+      await this.octokit.graphql<EnablePullRequestAutoMergeResponse>(
+        query,
+        params
+      )
     return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest
   }
 }
