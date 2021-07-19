@@ -21,7 +21,8 @@ const core_1 = __nccwpck_require__(762);
 class GithubHelper {
     constructor(token) {
         this.octokit = new core_1.Octokit({
-            auth: token
+            auth: token,
+            baseUrl: process.env['GITHUB_API_URL'] || 'https://api.github.com'
         });
     }
     getPullRequestId(owner, repo, pullRequestNumber) {
