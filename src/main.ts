@@ -37,7 +37,7 @@ async function run(): Promise<void> {
     } else {
       throw Error('Failed to enable auto-merge')
     }
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(error.message)
   }
 }
