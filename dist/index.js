@@ -120,16 +120,16 @@ function run() {
                 pullRequestNumber: Number(core.getInput('pull-request-number')),
                 mergeMethod: core.getInput('merge-method')
             };
-            core.debug(`Inputs: ${util_1.inspect(inputs)}`);
+            core.debug(`Inputs: ${(0, util_1.inspect)(inputs)}`);
             const [owner, repo] = inputs.repository.split('/');
-            core.debug(`Repo: ${util_1.inspect(repo)}`);
+            core.debug(`Repo: ${(0, util_1.inspect)(repo)}`);
             const githubHelper = new github_helper_1.GithubHelper(inputs.token);
             core.info('Fetching pull request ID');
             const pullRequestId = yield githubHelper.getPullRequestId(owner, repo, inputs.pullRequestNumber);
-            core.debug(`PullRequestId: ${util_1.inspect(pullRequestId)}`);
+            core.debug(`PullRequestId: ${(0, util_1.inspect)(pullRequestId)}`);
             core.info(`Enabling auto-merge on pull request ID ${pullRequestId}`);
             const res = yield githubHelper.enablePullRequestAutomerge(pullRequestId, inputs.mergeMethod.toUpperCase());
-            core.debug(`AutoMergeRequest: ${util_1.inspect(res)}`);
+            core.debug(`AutoMergeRequest: ${(0, util_1.inspect)(res)}`);
             if (res.enabledAt) {
                 core.info(`Auto-merge successfully enabled by ${res.enabledBy.login}`);
             }
