@@ -1,7 +1,20 @@
-import {Octokit} from '@octokit/core'
+import {Octokit as Core} from '@octokit/core'
 import * as OctokitTypes from '@octokit/types'
+import {HttpsProxyAgent} from 'https-proxy-agent'
 
+const Octokit = Core.plugin(autoProxyAgent)
 type OctokitClient = InstanceType<typeof Octokit>
+
+// Octokit plugin to support the https_proxy environment variable
+function autoProxyAgent(octokit: Core) {
+  const proxy = process.env.https_proxy || process.env.HTTPS_PROXY
+  if (!proxy) return
+
+  const agent = new HttpsProxyAgent(proxy)
+  octokit.hook.before('request', options => {
+    options.request.agent = agent
+  })
+}
 
 export class GithubHelper {
   private octokit: OctokitClient
