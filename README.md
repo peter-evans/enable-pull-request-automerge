@@ -9,7 +9,7 @@ A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collabo
 ## Usage
 
 ```yml
-      - uses: peter-evans/enable-pull-request-automerge@v1
+      - uses: peter-evans/enable-pull-request-automerge@v2
         with:
           token: ${{ secrets.PAT }}
           pull-request-number: 1
@@ -37,7 +37,7 @@ This action uses a GitHub API that only works under specific conditions. All of 
 In the following example [create-pull-request](https://github.com/peter-evans/create-pull-request) action is used to create a pull request containing some changes that we want to merge automatically once requirements have been satisfied.
 
 ```yml
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Make changes to pull request here
 
@@ -49,7 +49,7 @@ In the following example [create-pull-request](https://github.com/peter-evans/cr
 
       - name: Enable Pull Request Automerge
         if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: peter-evans/enable-pull-request-automerge@v1
+        uses: peter-evans/enable-pull-request-automerge@v2
         with:
           token: ${{ secrets.PAT }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}

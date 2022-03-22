@@ -1,6 +1,6 @@
 {
   "name": "enable-pull-request-automerge",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "A GitHub action to enable auto-merge on a pull request",
   "main": "lib/main.js",
