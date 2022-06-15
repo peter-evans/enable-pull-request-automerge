@@ -1,9 +1,12 @@
+import * as core from '@actions/core'
 import {Octokit as Core} from '@octokit/core'
 import * as OctokitTypes from '@octokit/types'
 import {HttpsProxyAgent} from 'https-proxy-agent'
 
 const Octokit = Core.plugin(autoProxyAgent)
 type OctokitClient = InstanceType<typeof Octokit>
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 // Octokit plugin to support the https_proxy environment variable
 function autoProxyAgent(octokit: Core) {
@@ -54,31 +57,49 @@ export class GithubHelper {
     pullRequestId: string,
     mergeMethod: string
   ): Promise<AutoMergeRequest> {
-    const params: OctokitTypes.RequestParameters = {
-      pullRequestId: pullRequestId,
-      mergeMethod: mergeMethod
-    }
-    const query = `mutation ($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
-      enablePullRequestAutoMerge(input: {
-        pullRequestId: $pullRequestId,
-        mergeMethod: $mergeMethod
-      }) {
-        pullRequest {
-          autoMergeRequest {
-            enabledAt
-            enabledBy {
-              login
+    let attempts = 0
+    // We retry here because the GitHub API may return with errors due to the
+    // PR not yet being in a state where automerge can yet be enabled. Example
+    // error messages from the API include:
+    //  - "Pull request is in unstable status"
+    //  - "Pull request is in clean status"
+    do {
+      if (attempts > 0) {
+        await sleep(5_000)
+      }
+      const params: OctokitTypes.RequestParameters = {
+        pullRequestId: pullRequestId,
+        mergeMethod: mergeMethod
+      }
+      const query = `mutation ($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
+        enablePullRequestAutoMerge(input: {
+          pullRequestId: $pullRequestId,
+          mergeMethod: $mergeMethod
+        }) {
+          pullRequest {
+            autoMergeRequest {
+              enabledAt
+              enabledBy {
+                login
+              }
             }
           }
         }
+      }`
+      try {
+        const response =
+          await this.octokit.graphql<EnablePullRequestAutoMergeResponse>(
+            query,
+            params
+          )
+        return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest
+      } catch (e) {
+        core.warning(e instanceof Error ? e : e + '')
+        continue
       }
-    }`
-    const response =
-      await this.octokit.graphql<EnablePullRequestAutoMergeResponse>(
-        query,
-        params
-      )
-    return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest
+    } while (++attempts < 5)
+
+    throw new Error('Failed to enable pull request automerge.')
   }
 }
 
