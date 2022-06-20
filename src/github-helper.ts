@@ -1,5 +1,7 @@
+import * as core from '@actions/core'
 import {Octokit as Core} from '@octokit/core'
 import * as OctokitTypes from '@octokit/types'
+import {GraphqlResponseError} from '@octokit/graphql'
 import {HttpsProxyAgent} from 'https-proxy-agent'
 
 const Octokit = Core.plugin(autoProxyAgent)
@@ -73,12 +75,27 @@ export class GithubHelper {
         }
       }
     }`
-    const response =
-      await this.octokit.graphql<EnablePullRequestAutoMergeResponse>(
-        query,
-        params
-      )
-    return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest
+    try {
+      const response =
+        await this.octokit.graphql<EnablePullRequestAutoMergeResponse>(
+          query,
+          params
+        )
+      return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest
+    } catch (error) {
+      if (error instanceof GraphqlResponseError) {
+        if (
+          error.errors?.some(e =>
+            e.message.toLowerCase().includes('pull request is in clean status')
+          )
+        ) {
+          core.error(
+            'Unable to enable automerge. Make sure you have enabled branch protection with at least one status check marked as required. See https://github.com/peter-evans/enable-pull-request-automerge#conditions for more information.'
+          )
+        }
+      }
+      throw error
+    }
   }
 }
 
