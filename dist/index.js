@@ -6,6 +6,25 @@
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -17,7 +36,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.GithubHelper = void 0;
+const core = __importStar(__nccwpck_require__(2186));
 const core_1 = __nccwpck_require__(6762);
+const graphql_1 = __nccwpck_require__(8467);
 const https_proxy_agent_1 = __nccwpck_require__(7219);
 const Octokit = core_1.Octokit.plugin(autoProxyAgent);
 // Octokit plugin to support the https_proxy environment variable
@@ -56,6 +77,7 @@ class GithubHelper {
         });
     }
     enablePullRequestAutomerge(pullRequestId, mergeMethod) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const params = {
                 pullRequestId: pullRequestId,
@@ -76,8 +98,18 @@ class GithubHelper {
         }
       }
     }`;
-            const response = yield this.octokit.graphql(query, params);
-            return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest;
+            try {
+                const response = yield this.octokit.graphql(query, params);
+                return response.enablePullRequestAutoMerge.pullRequest.autoMergeRequest;
+            }
+            catch (error) {
+                if (error instanceof graphql_1.GraphqlResponseError) {
+                    if ((_a = error.errors) === null || _a === void 0 ? void 0 : _a.some(e => e.message.toLowerCase().includes('pull request is in clean status'))) {
+                        core.error('Unable to enable automerge. Make sure you have enabled branch protection with at least one status check marked as required. See https://github.com/peter-evans/enable-pull-request-automerge#conditions for more information.');
+                    }
+                }
+                throw error;
+            }
         });
     }
 }
@@ -1540,7 +1572,7 @@ function _objectWithoutProperties(source, excluded) {
   return target;
 }
 
-const VERSION = "3.5.1";
+const VERSION = "3.6.0";
 
 const _excluded = ["authStrategy"];
 class Octokit {
@@ -2083,18 +2115,22 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 var request = __nccwpck_require__(6234);
 var universalUserAgent = __nccwpck_require__(5030);
 
-const VERSION = "4.6.4";
+const VERSION = "4.8.0";
 
-class GraphqlError extends Error {
-  constructor(request, response) {
-    const message = response.data.errors[0].message;
-    super(message);
-    Object.assign(this, response.data);
-    Object.assign(this, {
-      headers: response.headers
-    });
-    this.name = "GraphqlError";
-    this.request = request; // Maintains proper stack trace (only available on V8)
+function _buildMessageForResponseErrors(data) {
+  return `Request failed due to following response errors:\n` + data.errors.map(e => ` - ${e.message}`).join("\n");
+}
+
+class GraphqlResponseError extends Error {
+  constructor(request, headers, response) {
+    super(_buildMessageForResponseErrors(response));
+    this.request = request;
+    this.headers = headers;
+    this.response = response;
+    this.name = "GraphqlResponseError"; // Expose the errors and response data in their shorthand properties.
+
+    this.errors = response.errors;
+    this.data = response.data; // Maintains proper stack trace (only available on V8)
 
     /* istanbul ignore next */
 
@@ -2152,10 +2188,7 @@ function graphql(request, query, options) {
         headers[key] = response.headers[key];
       }
 
-      throw new GraphqlError(requestOptions, {
-        headers,
-        data: response.data
-      });
+      throw new GraphqlResponseError(requestOptions, headers, response.data);
     }
 
     return response.data.data;
@@ -2189,6 +2222,7 @@ function withCustomRequest(customRequest) {
   });
 }
 
+exports.GraphqlResponseError = GraphqlResponseError;
 exports.graphql = graphql$1;
 exports.withCustomRequest = withCustomRequest;
 //# sourceMappingURL=index.js.map
@@ -2294,7 +2328,7 @@ var isPlainObject = __nccwpck_require__(3287);
 var nodeFetch = _interopDefault(__nccwpck_require__(467));
 var requestError = __nccwpck_require__(537);
 
-const VERSION = "5.6.0";
+const VERSION = "5.6.3";
 
 function getBufferResponse(response) {
   return response.arrayBuffer();
