@@ -86,7 +86,7 @@ export class GithubHelper {
       if (error instanceof GraphqlResponseError) {
         if (
           error.errors?.some(e =>
-            e.message.toLowerCase().includes('pull request is in clean status')
+            /pull request is in (clean|unstable) status/i.test(e.message)
           )
         ) {
           core.error(
