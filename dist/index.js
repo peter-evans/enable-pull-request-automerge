@@ -104,7 +104,7 @@ class GithubHelper {
             }
             catch (error) {
                 if (error instanceof graphql_1.GraphqlResponseError) {
-                    if ((_a = error.errors) === null || _a === void 0 ? void 0 : _a.some(e => e.message.toLowerCase().includes('pull request is in clean status'))) {
+                    if ((_a = error.errors) === null || _a === void 0 ? void 0 : _a.some(e => /pull request is in (clean|unstable) status/i.test(e.message))) {
                         core.error('Unable to enable automerge. Make sure you have enabled branch protection with at least one status check marked as required. See https://github.com/peter-evans/enable-pull-request-automerge#conditions for more information.');
                     }
                 }
