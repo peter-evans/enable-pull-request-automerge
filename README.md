@@ -62,7 +62,7 @@ The `if` condition makes sure we don't approve multiple times if the workflow ex
 ```yml
       - name: Auto approve
         if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: juliangruber/approve-pull-request-action@v1
+        uses: juliangruber/approve-pull-request-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ steps.cpr.outputs.pull-request-number }}
