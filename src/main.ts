@@ -2,6 +2,11 @@ import * as core from '@actions/core'
 import {GithubHelper} from './github-helper'
 import {inspect} from 'util'
 
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message
+  return String(error)
+}
+
 async function run(): Promise<void> {
   try {
     const inputs = {
@@ -37,8 +42,8 @@ async function run(): Promise<void> {
     } else {
       throw Error('Failed to enable auto-merge')
     }
-  } catch (error: any) {
-    core.setFailed(error.message)
+  } catch (error) {
+    core.setFailed(getErrorMessage(error))
   }
 }
 
