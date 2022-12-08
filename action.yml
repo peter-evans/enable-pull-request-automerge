@@ -2,8 +2,8 @@ name: 'Enable Pull Request Automerge'
 description: 'A GitHub action to enable auto-merge on a pull request'
 inputs:
   token:
-    description: 'A repo scoped GitHub Personal Access Token (PAT).'
-    required: true
+    description: 'GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT)'
+    default: ${{ github.token }}
   repository:
     description: 'The target GitHub repository containing the pull request'
     default: ${{ github.repository }}
