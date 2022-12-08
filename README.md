@@ -19,7 +19,7 @@ A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collabo
 
 | Name | Description | Default |
 | --- | --- | --- |
-| `token` | (**required**) A `repo` scoped [Personal Access Token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). Note: `GITHUB_TOKEN` *does not* work here. | |
+| `token` | `GITHUB_TOKEN` (permissions `pull_requests: write`, `contents: write`) or a `repo` scoped [Personal Access Token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). | `GITHUB_TOKEN` |
 | `repository` | The target GitHub repository containing the pull request. | `github.repository` (Current repository) |
 | `pull-request-number` | (**required**) The number of the target pull request | |
 | `merge-method` | The merge method to use. `merge`, `rebase` or `squash`. | `merge` |
@@ -32,7 +32,32 @@ This action uses a GitHub API that only works under specific conditions. All of 
 2. The pull request `base` must have a branch protection rule with at least one requirement enabled.
 3. The pull request must be in a state where requirements have not yet been satisfied. If the pull request can already be merged, attempting to enable auto-merge will fail.
 
-### Example
+### Dependabot example
+
+The following example will automerge dependabot pull requests.
+Note that if you use the default `GITHUB_TOKEN`, as in the example, the merge will not trigger further workflow runs.
+If you want to trigger further workflow runs, you will need to use a `repo` scoped [Personal Access Token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+
+```yml
+name: Auto-merge Dependabot
+on: pull_request
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
+```
+
+### Create pull request example
 
 In the following example [create-pull-request](https://github.com/peter-evans/create-pull-request) action is used to create a pull request containing some changes that we want to merge automatically once requirements have been satisfied.
 
