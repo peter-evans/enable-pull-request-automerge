@@ -26,7 +26,7 @@ runs:
       shell: bash
       run: gh pr merge -R "${{ inputs.repository }}" --${{ steps.lowercase.outputs.merge-method }} --auto "${{ inputs.pull-request-number }}"
       env:
-        GH_TOKEN: ${{ inputs.github_token }}
+        GH_TOKEN: ${{ inputs.token }}
 branding:
   icon: 'git-pull-request'
   color: 'gray-dark'
