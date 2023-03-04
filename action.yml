@@ -20,7 +20,7 @@ runs:
       id: lowercase
       shell: bash
       run: |
-        INPUT=${{ inputs.merge-method }} echo "merge-method=${INPUT,,}" >> $GITHUB_OUTPUT
+        INPUT=${{ inputs.merge-method }}; echo "merge-method=${INPUT,,}" >> $GITHUB_OUTPUT
 
     - name: Enable automerge
       shell: bash
