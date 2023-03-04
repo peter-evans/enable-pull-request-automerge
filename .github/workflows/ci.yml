@@ -16,8 +16,19 @@ permissions:
   contents: write
 
 jobs:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/upload-artifact@v3
+        with:
+          name: action.yml
+          path: action.yml
+
   testWithRequiredStatusChecks:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -26,6 +37,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ci-test/status-check-base-${{ matrix.target }}
+      - if: matrix.target == 'built' || github.event_name == 'pull_request'
+        uses: actions/download-artifact@v3
+        with:
+          name: action.yml
+          path: .
 
       - name: Create change
         run: date +%s > report.txt
@@ -56,6 +72,7 @@ jobs:
 
   testWithRequiredReviews:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,6 +81,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ci-test/reviews-base-${{ matrix.target }}
+      - if: matrix.target == 'built' || github.event_name == 'pull_request'
+        uses: actions/download-artifact@v3
+        with:
+          name: action.yml
+          path: .
 
       - name: Create change
         run: date +%s > report.txt
