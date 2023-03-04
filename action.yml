@@ -18,6 +18,7 @@ runs:
   steps:
     - name: Lowercase
       id: lowercase
+      shell: bash
       run: |
         INPUT=${{ inputs.merge-method }} echo "merge-method=${INPUT,,}" >> $GITHUB_OUTPUT
 
