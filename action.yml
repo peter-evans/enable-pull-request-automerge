@@ -13,9 +13,6 @@ inputs:
   merge-method:
     description: 'The merge method to use. `merge`, `rebase` or `squash`.'
     default: merge
-  delete-branch:
-    description: 'Delete the local and remote branch after merge'
-    default: false
 runs:
   using: composite
   steps:
@@ -25,19 +22,9 @@ runs:
       run: |
         INPUT=${{ inputs.merge-method }}; echo "merge-method=${INPUT,,}" >> $GITHUB_OUTPUT
 
-    - name: Delete branch
-      id: delete-branch
-      shell: bash
-      run: |
-        if [[ ${{ inputs.delete-branch }} == "true" ]]; then
-          echo "flag=--delete-branch" >> $GITHUB_OUTPUT
-        else
-          echo "flag=" >> $GITHUB_OUTPUT
-        fi
-
     - name: Enable automerge
       shell: bash
-      run: gh pr merge -R "${{ inputs.repository }}" --${{ steps.lowercase.outputs.merge-method }} --auto ${{ steps.delete-branch.outputs.flag }} "${{ inputs.pull-request-number }}"
+      run: gh pr merge -R "${{ inputs.repository }}" --${{ steps.lowercase.outputs.merge-method }} --auto "${{ inputs.pull-request-number }}"
       env:
         GH_TOKEN: ${{ inputs.token }}
 branding:
