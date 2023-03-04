@@ -12,7 +12,7 @@ inputs:
     required: true
   merge-method:
     description: 'The merge method to use. `merge`, `rebase` or `squash`.'
-    default: MERGE
+    default: merge
 runs:
   using: composite
   steps:
