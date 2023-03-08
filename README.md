@@ -8,6 +8,18 @@ A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collabo
 
 ## Usage
 
+| :exclamation:  Using this action is no longer necessary   |
+|-----------------------------------------------------------|
+
+The same functionality exists in the GitHub CLI. See the documentation [here](https://cli.github.com/manual/gh_pr_merge).
+```yml
+    - name: Enable Pull Request Automerge
+      run: gh pr merge --merge --auto "1"
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+```
+
+If you prefer to use this action:
 ```yml
       - uses: peter-evans/enable-pull-request-automerge@v2
         with:
@@ -87,10 +99,9 @@ The `if` condition makes sure we don't approve multiple times if the workflow ex
 ```yml
       - name: Auto approve
         if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: juliangruber/approve-pull-request-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ steps.cpr.outputs.pull-request-number }}
+        run: gh pr review --approve "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## License
