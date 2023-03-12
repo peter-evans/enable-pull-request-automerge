@@ -12,10 +12,21 @@ inputs:
     required: true
   merge-method:
     description: 'The merge method to use. `merge`, `rebase` or `squash`.'
-    default: MERGE
+    default: merge
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: composite
+  steps:
+    - name: Lowercase
+      id: lowercase
+      shell: bash
+      run: |
+        echo merge-method=$(echo "${{ inputs.merge-method }}" | tr '[:upper:]' '[:lower:]') >> $GITHUB_OUTPUT
+
+    - name: Enable automerge
+      shell: bash
+      run: gh pr merge -R "${{ inputs.repository }}" --${{ steps.lowercase.outputs.merge-method }} --auto "${{ inputs.pull-request-number }}"
+      env:
+        GH_TOKEN: ${{ inputs.token }}
 branding:
   icon: 'git-pull-request'
   color: 'gray-dark'
