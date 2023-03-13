@@ -4,7 +4,7 @@
 
 A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/automatically-merging-a-pull-request) on a pull request.
 
-:warning: There are very specific conditions under which this action will work. See [Conditions](#conditions) for details.
+:warning: There are very specific conditions under which this action will work as expected. See [Conditions](#conditions) for details.
 
 ## Usage
 
@@ -38,11 +38,11 @@ If you prefer to use this action:
 
 ### Conditions
 
-This action uses a GitHub API that only works under specific conditions. All of the following conditions must be true for this action to succeed.
+The following conditions must be true for auto-merge to be enabled on a pull request.
 
 1. The target repository must have [Allow auto-merge](https://docs.github.com/en/github/administering-a-repository/managing-auto-merge-for-pull-requests-in-your-repository) enabled in settings.
 2. The pull request `base` must have a branch protection rule with at least one requirement enabled.
-3. The pull request must be in a state where requirements have not yet been satisfied. If the pull request can already be merged, attempting to enable auto-merge will fail.
+3. The pull request must be in a state where requirements have not yet been satisfied. If the pull request is in a state where it can already be merged, the action will merge it immediately without enabling auto-merge.
 
 ### Dependabot example
 
