@@ -2,6 +2,8 @@ name: Test required status check
 on:
   pull_request:
     branches:
+      - 'ci-test/status-check-base-built'
+      - 'ci-test/status-check-base-committed'
       - 'ci-test/status-check-base-ubuntu-latest'
       - 'ci-test/status-check-base-macos-latest'
       - 'ci-test/status-check-base-windows-latest'
