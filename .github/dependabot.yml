@@ -5,18 +5,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "thursday"
-    labels:
-      - "dependencies"
-
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "thursday"
     open-pull-requests-limit: 1
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
     labels:
       - "dependencies"
- 

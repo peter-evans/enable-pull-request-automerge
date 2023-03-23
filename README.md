@@ -4,12 +4,24 @@
 
 A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/automatically-merging-a-pull-request) on a pull request.
 
-:warning: There are very specific conditions under which this action will work. See [Conditions](#conditions) for details.
+:warning: There are very specific conditions under which this action will work as expected. See [Conditions](#conditions) for details.
 
 ## Usage
 
+| :exclamation:  Using this action is no longer necessary   |
+|-----------------------------------------------------------|
+
+The same functionality exists in the GitHub CLI. See the documentation [here](https://cli.github.com/manual/gh_pr_merge).
 ```yml
-      - uses: peter-evans/enable-pull-request-automerge@v2
+    - name: Enable Pull Request Automerge
+      run: gh pr merge --merge --auto "1"
+      env:
+        GH_TOKEN: ${{ secrets.PAT }}
+```
+
+If you prefer to use this action:
+```yml
+      - uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.PAT }}
           pull-request-number: 1
@@ -26,11 +38,11 @@ A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collabo
 
 ### Conditions
 
-This action uses a GitHub API that only works under specific conditions. All of the following conditions must be true for this action to succeed.
+The following conditions must be true for auto-merge to be enabled on a pull request.
 
 1. The target repository must have [Allow auto-merge](https://docs.github.com/en/github/administering-a-repository/managing-auto-merge-for-pull-requests-in-your-repository) enabled in settings.
 2. The pull request `base` must have a branch protection rule with at least one requirement enabled.
-3. The pull request must be in a state where requirements have not yet been satisfied. If the pull request can already be merged, attempting to enable auto-merge will fail.
+3. The pull request must be in a state where requirements have not yet been satisfied. If the pull request is in a state where it can already be merged, the action will merge it immediately without enabling auto-merge.
 
 ### Dependabot example
 
@@ -51,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
     steps:
-      - uses: peter-evans/enable-pull-request-automerge@v2
+      - uses: peter-evans/enable-pull-request-automerge@v3
         with:
           pull-request-number: ${{ github.event.pull_request.number }}
           merge-method: squash
@@ -74,7 +86,7 @@ In the following example [create-pull-request](https://github.com/peter-evans/cr
 
       - name: Enable Pull Request Automerge
         if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: peter-evans/enable-pull-request-automerge@v2
+        uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.PAT }}
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
@@ -87,10 +99,9 @@ The `if` condition makes sure we don't approve multiple times if the workflow ex
 ```yml
       - name: Auto approve
         if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: juliangruber/approve-pull-request-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ steps.cpr.outputs.pull-request-number }}
+        run: gh pr review --approve "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## License
