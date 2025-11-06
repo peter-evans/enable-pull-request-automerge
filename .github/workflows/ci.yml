@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ci-test/status-check-base-${{ matrix.os }}
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: action.yml
           path: .
@@ -79,7 +79,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ci-test/reviews-base-${{ matrix.os }}
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: action.yml
           path: .
