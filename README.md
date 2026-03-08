@@ -14,7 +14,7 @@ A GitHub action to [enable auto-merge](https://docs.github.com/en/github/collabo
 The same functionality exists in the GitHub CLI. See the documentation [here](https://cli.github.com/manual/gh_pr_merge).
 ```yml
     - name: Enable Pull Request Automerge
-      run: gh pr merge --merge --auto "1"
+      run: gh pr merge "1" --merge --auto 
       env:
         GH_TOKEN: ${{ secrets.PAT }}
 ```
